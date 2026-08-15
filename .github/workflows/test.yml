@@ -25,5 +25,7 @@ jobs:
       - name: Check index.js
         run: node --check index.js
 
-      - name: Test Bot Startup
-        run: timeout 30s npm start || true
+      - name: Start UMER-MD MINI
+        env:
+          PHONE_NUMBER: ${{ secrets.PHONE_NUMBER }}
+        run: timeout 60s npm start || true
