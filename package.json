@@ -1,0 +1,13 @@
+{
+  "name": "umer-md-mini",
+  "version": "1.0.0",
+  "description": "UMER-MD MINI WhatsApp Bot",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@whiskeysockets/baileys": "latest",
+    "pino": "latest"
+  }
+}
