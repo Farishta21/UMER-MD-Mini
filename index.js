@@ -17,11 +17,38 @@ async function startBot() {
 
   sock.ev.on("creds.update", saveCreds);
 
+  // Pairing Code
+  if (!state.creds.registered) {
+    const phoneNumber = process.env.PHONE_NUMBER;
+
+    if (!phoneNumber) {
+      console.log("❌ PHONE_NUMBER environment variable missing!");
+      return;
+    }
+
+    try {
+      const code = await sock.requestPairingCode(
+        phoneNumber.replace(/[^0-9]/g, "")
+      );
+
+      console.log("");
+      console.log("╔════════════════════════════╗");
+      console.log("║      𝐔𝐌𝐄𝐑-𝐌𝐃 𝐌𝐈𝐍𝐈       ║");
+      console.log("║      PAIRING CODE 🔐       ║");
+      console.log("╠════════════════════════════╣");
+      console.log(`║       ${code}       ║`);
+      console.log("╚════════════════════════════╝");
+      console.log("");
+    } catch (err) {
+      console.error("❌ Pairing code error:", err.message);
+    }
+  }
+
   sock.ev.on("connection.update", ({ connection, lastDisconnect }) => {
     if (connection === "open") {
       console.log("╔════════════════════════════╗");
       console.log("║       𝐔𝐌𝐄𝐑-𝐌𝐃 𝐌𝐈𝐍𝐈       ║");
-      console.log("║       𝐔𝐌𝐄𝐑-𝐌𝐃 CONNECTED ✅      ║");
+      console.log("║       CONNECTED ✅         ║");
       console.log("╚════════════════════════════╝");
     }
 
@@ -48,9 +75,30 @@ async function startBot() {
       msg.message.extendedTextMessage?.text ||
       "";
 
-    if (text.toLowerCase() === ".ping") {
+    const command = text.trim().toLowerCase();
+
+    // .ping.dev
+    if (command === ".ping.dev") {
       await sock.sendMessage(msg.key.remoteJid, {
-        text: "🏓 PONG!\n\n⚡ 𝐔𝐌𝐄𝐑-𝐌𝐃 𝐌𝐈𝐍𝐈 is alive!"
+        text:
+          "🏓 PONG!\n\n" +
+          "⚡ 𝐔𝐌𝐄𝐑-𝐌𝐃 𝐌𝐈𝐍𝐈\n" +
+          "🚀 Bot is alive!"
+      });
+    }
+
+    // .menu
+    if (command === ".menu") {
+      await sock.sendMessage(msg.key.remoteJid, {
+        text:
+          "╔════════════════════╗\n" +
+          "║    𝐔𝐌𝐄𝐑-𝐌𝐃 𝐌𝐈𝐍𝐈    ║\n" +
+          "╠════════════════════╣\n" +
+          "║ 📋 MENU             ║\n" +
+          "║                    ║\n" +
+          "║ 🏓 .ping.dev       ║\n" +
+          "║ 📋 .menu            ║\n" +
+          "╚════════════════════╝"
       });
     }
   });
